@@ -15,6 +15,10 @@ class MainActivity : AppCompatActivity() {
     val month = 3
     var season : String? = null
 
+    val textView by lazy {findViewById<TextView>(R.id.text_view)}
+    val editText by lazy {findViewById<EditText>(R.id.edit_text)}
+    val button by lazy {findViewById<Button>(R.id.button)}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,30 +32,21 @@ class MainActivity : AppCompatActivity() {
         }
         Log.d("TAG", season.toString())
 
-        val textView : TextView = findViewById(R.id.text_view)
-        val editText : EditText = findViewById(R.id.edit_text)
-        val button : Button = findViewById(R.id.button)
-
-        button.setOnClickListener(View.OnClickListener {
-            fun <Unit> onClick() {
-                var callable : Callable<kotlin.Unit> = getDataFromCallable(editText)
-                var futureTask : FutureTask<kotlin.Unit> = FutureTask(callable)
+        button.setOnClickListener {
+                var callable : Callable<Int> = getDataFromCallable(editText.text.toString().toInt())
+                var futureTask : FutureTask<Int> = FutureTask(callable)
                 Thread(futureTask).start()
                 textView.setText(futureTask.get().toString())
-            }
-        })
+        }
     }
 
-    fun getDataFromCallable(editText: EditText) : Callable<Unit> {
-        val callable : Callable<Unit> = Callable {
-            fun call(): Int {
+    fun getDataFromCallable(a: Int) : Callable<Int> {
+        return Callable {
                 var result = 0
-                for (x in 2..(editText.text.toString()).toInt()) {
-                    result = result + x
+                for (x in 2..a) {
+                    result += x
                 }
-                return result
-            }
+            return@Callable result
         }
-        return callable
     }
 }
